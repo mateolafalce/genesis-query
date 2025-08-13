@@ -1,0 +1,72 @@
+.sidebar {
+    position: fixed;
+    right: 0;
+    top: 70px;
+    width: 300px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-left: 1px solid #ddd;
+    height: 100%;
+}
+.main-content {
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.three h1 {
+  font-size: 100px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.5em;
+  padding-bottom: 15px;
+  position: relative;
+  text-align: center;
+}
+.three h1:before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55px;
+  background-color: #111;
+}
+
+
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 9999;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+.list-group, .card, nav[aria-label="Proposals pagination"] {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h3 {
+    text-align: center;
+}
+
+.list-group-item {
+    text-align: left;
+    margin: 10px;
+}
