@@ -1,4 +1,10 @@
+<div align="center">
+
 # Genesis Query
+
+<img src="static/preview.png" alt="Preview" />
+
+</div>
 
 ## Run Locally
 
