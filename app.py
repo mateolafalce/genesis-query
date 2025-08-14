@@ -47,7 +47,7 @@ def home():
         for p in propuestas_cursor.fetchall()
     ]
 
-    ip_address = request.remote_addr
+    ip_address = get_real_ip()
     comments_cursor = db.execute(
         'SELECT id, content, votes, country_code FROM comments WHERE ip_address = ? ORDER BY created_at DESC',
         (ip_address,)
@@ -72,7 +72,7 @@ def home():
 
 @app.route("/comentar", methods=["POST"])
 def comentar():
-    ip_address = request.remote_addr
+    ip_address = get_real_ip()
     country_code = get_country_code(ip_address)
     db = get_db()
     existing_comment = db.execute('SELECT id FROM comments WHERE ip_address = ?', (ip_address,)).fetchone()
@@ -96,7 +96,7 @@ def comentar():
 
 @app.route("/comentar_ajax", methods=["POST"])
 def comentar_ajax():
-    ip_address = request.remote_addr
+    ip_address = get_real_ip()
     country_code = get_country_code(ip_address)
     db = get_db()
     existing_comment = db.execute('SELECT id FROM comments WHERE ip_address = ?', (ip_address,)).fetchone()
@@ -131,7 +131,7 @@ def comentar_ajax():
 
 @app.route("/upvote/<int:comment_id>", methods=["POST"])
 def upvote(comment_id):
-    ip_address = request.remote_addr
+    ip_address = get_real_ip()
     db = get_db()
     
     already_upvoted = db.execute(
@@ -151,7 +151,7 @@ def upvote(comment_id):
 
 @app.route("/upvote_ajax/<int:comment_id>", methods=["POST"])
 def upvote_ajax(comment_id):
-    ip_address = request.remote_addr
+    ip_address = get_real_ip()
     db = get_db()
     already_upvoted = db.execute(
         'SELECT id FROM upvotes WHERE comment_id = ? AND ip_address = ?',
@@ -167,20 +167,32 @@ def upvote_ajax(comment_id):
     return jsonify({"success": True, "votes": comment["votes"], "emoji": emoji})
 
 def get_country_code(ip_address):
+    print("IP enviada a ipapi:", ip_address)
+    if (ip_address.startswith("127.") or
+        ip_address.startswith("192.168.") or
+        ip_address.startswith("10.") or
+        ip_address.startswith("172.")):
+        return "🏳️"  
     try:
         response = requests.get(f"https://ipapi.co/{ip_address}/country/", timeout=2)
         if response.status_code == 200:
             code = response.text.strip()
             if code and len(code) == 2:
                 return code.upper()
-    except Exception:
-        pass
+    except Exception as e:
+        print("Error ipapi:", e)
     return "KP"
 
 def country_code_to_emoji(code):
     if not code or len(code) != 2:
         return "🏳️" 
     return chr(0x1F1E6 + ord(code[0].upper()) - ord('A')) + chr(0x1F1E6 + ord(code[1].upper()) - ord('A'))
+
+def get_real_ip():
+    forwarded_for = request.headers.get('X-Forwarded-For', None)
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()
+    return request.remote_addr
 
 if __name__ == '__main__':
     if not os.path.exists(DATABASE):
